@@ -1,0 +1,66 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# -------------------------
+# LOAD DATA
+# -------------------------
+df = pd.read_csv("sales_data.csv")
+
+# Convert date
+df['Sale_Date'] = pd.to_datetime(df['Sale_Date'])
+
+# -------------------------
+# FILTER PRODUCT CATEGORY
+# -------------------------
+products = ['Furniture', 'Food', 'Clothing', 'Electronics']
+df = df[df['Product_Category'].isin(products)]
+
+# -------------------------
+# TITLE
+# -------------------------
+st.title("📊 Sales Data Dashboard")
+
+# -------------------------
+# SIDEBAR FILTER
+# -------------------------
+category = st.sidebar.multiselect(
+    "Select Product Category",
+    products,
+    default=products
+)
+
+df = df[df['Product_Category'].isin(category)]
+
+# -------------------------
+# MONTHLY REVENUE
+# -------------------------
+df['Month'] = df['Sale_Date'].dt.to_period('M')
+monthly_revenue = df.groupby('Month')['Sales_Amount'].sum()
+
+st.subheader("📅 Monthly Revenue")
+st.bar_chart(monthly_revenue)
+
+# -------------------------
+# TOP PRODUCTS
+# -------------------------
+top_products = df.groupby('Product_Category')['Quantity_Sold'].sum().sort_values(ascending=False).head(10)
+
+st.subheader("🏆 Top Selling Products")
+st.bar_chart(top_products)
+
+# -------------------------
+# PROFIT ANALYSIS
+# -------------------------
+df['Profit'] = (df['Unit_Price'] - df['Unit_Cost']) * df['Quantity_Sold'] - df['Discount']
+
+profit_category = df.groupby('Product_Category')['Profit'].sum()
+
+st.subheader("💰 Profit by Category")
+st.bar_chart(profit_category)
+
+# -------------------------
+# TOTAL PROFIT
+# -------------------------
+st.subheader("📈 Total Profit")
+st.write(df['Profit'].sum())

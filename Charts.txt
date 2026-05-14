@@ -1,0 +1,3 @@
+"C:\Users\Admin\Pictures\sales1.png"
+"C:\Users\Admin\Pictures\sales_chart2.png"
+"C:\Users\Admin\Pictures\sales_chart3.png"
